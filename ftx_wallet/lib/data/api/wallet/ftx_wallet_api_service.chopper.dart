@@ -14,9 +14,9 @@ class _$FtxWalletApiService extends FtxWalletApiService {
 
   final definitionType = FtxWalletApiService;
 
-  Future<Response> getBalance() {
+  Future<Response<BuiltList<FtxCoin>>> getBalance() {
     final $url = '/api/wallet/balances';
     final $request = Request('GET', $url, client.baseUrl);
-    return client.send<dynamic, dynamic>($request);
+    return client.send<BuiltList<FtxCoin>, FtxCoin>($request);
   }
 }

@@ -27,8 +27,12 @@ dependencies:
   chopper: ^2.4.1
   provider: ^5.0.0
   built_value: ^6.8.2
+  built_collection: ^4.3.2
   crypto: ^2.1.5
   cupertino_icons: ^1.0.2
+
+  flutter_bloc: ^7.0.0
+  bloc: ^7.0.0
 
 dev_dependencies:
   flutter_test:

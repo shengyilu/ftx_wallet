@@ -11,7 +11,7 @@ class WalletLoading extends WalletState {}
 
 class WalletLoaded extends WalletState {
 
-  final BuiltList<FtxCoin> ftxCoins;
+  final List<FtxCoin> ftxCoins;
 
   const WalletLoaded(this.ftxCoins);
 }

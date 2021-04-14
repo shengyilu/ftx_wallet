@@ -18,6 +18,7 @@ abstract class FtxWalletApiService extends ChopperService {
       services: [
         _$FtxWalletApiService(),
       ],
+      errorConverter: FtxDataConverter(),
       converter: FtxDataConverter(),
       interceptors: [
         HttpLoggingInterceptor(),

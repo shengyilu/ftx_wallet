@@ -8,6 +8,15 @@ import 'package:ftx_wallet/data/model/serializers.dart';
 class FtxDataConverter extends JsonConverter {
 
   @override
+  Response convertError<BodyType, InnerType>(Response response) {
+    final Response dynamicResponse = super.convertError(response);
+    Map<String, dynamic> content = jsonDecode(dynamicResponse.bodyString);
+
+    return dynamicResponse.replace<String>(body: content['error']);
+  }
+
+
+  @override
   Response<BodyType> convertResponse<BodyType, InnerType>(
       Response response) {
     final Response dynamicResponse = super.convertResponse(response);

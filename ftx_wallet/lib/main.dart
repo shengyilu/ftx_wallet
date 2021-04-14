@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ftx_wallet/data/model/ftx_coin.dart';
-import 'package:ftx_wallet/data/repository/ftx_wallet_repository.dart';
+import 'package:ftx_wallet/data/repository/ftx_wallet_repository_impl.dart';
 import 'package:logging/logging.dart';
 import 'package:provider/provider.dart';
 
@@ -26,7 +26,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => WalletBloc(FtxWalletRepository()),
+      create: (_) => WalletBloc(),
       child: MaterialApp(
         title: 'Flutter Demo',
         theme: ThemeData(
@@ -73,9 +73,11 @@ class _MyHomePageState extends State<MyHomePage> {
             final state = context.watch<WalletBloc>().state;
             if (state is WalletLoaded) {
               final ftxCoins = state.ftxCoins;
-              print(ftxCoins);
-            } else {
-              print(state);
+              print("[Edward] main: ${ftxCoins}");
+            }
+
+            if (state is WalletError) {
+              print(state.message);
             }
 
             return Column(

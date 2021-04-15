@@ -12,6 +12,8 @@ abstract class FtxWalletApiService extends ChopperService {
   @Get(path:'/api/wallet/balances')
   Future<Response<BuiltList<FtxCoin>>> getBalance();
 
+
+
   static FtxWalletApiService create() {
     final client = ChopperClient(
       baseUrl: 'https://ftx.com',

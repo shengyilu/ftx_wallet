@@ -11,9 +11,9 @@ class FtxHeaderInterceptor implements RequestInterceptor {
   static const String FTX_TS = "FTX-TS";
   static const String FTX_SUBACCOUNT = "FTX-SUBACCOUNT";
 
-  static const String API_KEY = "--";
-  static const String API_SECRET = "--";
-  static const String SUBACCOUNT_BTMX3 = "BTMX-5";
+  static const String API_KEY = "NnewCxjmln2zVRYWbr6ELvJ_oiiLij-OV00hpiWK";
+  static const String API_SECRET = "O884Pnhc9-uVpOk4zyvfztY7KMLpnvVwLuI5o-XI";
+  static const String SUBACCOUNT_BTMX3 = "Main Account";
 
   @override
   FutureOr<Request> onRequest(Request request) async {

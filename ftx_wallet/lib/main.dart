@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ftx_wallet/data/model/ftx_coin.dart';
 import 'package:ftx_wallet/data/repository/ftx_wallet_repository_impl.dart';
+import 'package:ftx_wallet/presentation/page/income_statement_page.dart';
 import 'package:logging/logging.dart';
 import 'package:provider/provider.dart';
 
@@ -25,15 +26,10 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (_) => WalletBloc(),
-      child: MaterialApp(
-        title: 'Flutter Demo',
-        theme: ThemeData(
-          primarySwatch: Colors.blue,
-        ),
-        home: MyHomePage(title: 'Flutter Demo Home Page'),
-      ),
+    return MaterialApp(
+      title: 'Flutter Demo',
+      theme: ThemeData.dark(),
+      home: IncomeStatementPage(title: 'Income Statement'),
     );
   }
 }

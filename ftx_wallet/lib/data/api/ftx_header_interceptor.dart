@@ -1,8 +1,7 @@
-
 import 'dart:async';
+import 'dart:convert' show utf8;
 
 import 'package:chopper/chopper.dart';
-import 'dart:convert' show utf8;
 import 'package:crypto/crypto.dart';
 
 class FtxHeaderInterceptor implements RequestInterceptor {
@@ -11,13 +10,13 @@ class FtxHeaderInterceptor implements RequestInterceptor {
   static const String FTX_TS = "FTX-TS";
   static const String FTX_SUBACCOUNT = "FTX-SUBACCOUNT";
 
-  static const String API_KEY = "NnewCxjmln2zVRYWbr6ELvJ_oiiLij-OV00hpiWK";
-  static const String API_SECRET = "O884Pnhc9-uVpOk4zyvfztY7KMLpnvVwLuI5o-XI";
-  static const String SUBACCOUNT_BTMX3 = "Main Account";
+  static const String API_KEY = "--";
+  static const String API_SECRET = "--";
+  static const String SUBACCOUNT_BTMX3 = "BTMX-3";
 
   @override
   FutureOr<Request> onRequest(Request request) async {
-    Request newRequest = request.replace(headers:_generateHeaders(request));
+    Request newRequest = request.replace(headers: _generateHeaders(request));
     return newRequest;
   }
 
@@ -28,7 +27,7 @@ class FtxHeaderInterceptor implements RequestInterceptor {
     headers[FTX_KEY] = API_KEY;
     headers[FTX_SIGN] = _getSignature(timestamp, request);
     headers[FTX_TS] = timestamp;
-    headers[FTX_SUBACCOUNT] = Uri.encodeComponent(SUBACCOUNT_BTMX3);
+    //headers[FTX_SUBACCOUNT] = Uri.encodeComponent(SUBACCOUNT_BTMX3);
     print(Uri.encodeComponent(SUBACCOUNT_BTMX3));
 
     return headers;
@@ -37,7 +36,8 @@ class FtxHeaderInterceptor implements RequestInterceptor {
   String _getSignature(String timestamp, Request request) {
     var apiSecret = utf8.encode(API_SECRET);
     print('$timestamp${request.method}${request.url}');
-    var signaturePayload = utf8.encode('$timestamp${request.method}${request.url}');
+    var signaturePayload =
+        utf8.encode('$timestamp${request.method}${request.url}');
 
     var hmacSha256 = Hmac(sha256, apiSecret);
     var digest = hmacSha256.convert(signaturePayload);

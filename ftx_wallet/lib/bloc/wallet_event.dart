@@ -3,5 +3,6 @@ part of 'wallet_bloc.dart';
 @immutable
 abstract class WalletEvent {}
 
-class GetBalance extends WalletEvent {
-}
+class GetBalance extends WalletEvent {}
+
+class GetDepositHistory extends WalletEvent {}

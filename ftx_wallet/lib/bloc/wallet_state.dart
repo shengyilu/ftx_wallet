@@ -1,6 +1,5 @@
 part of 'wallet_bloc.dart';
 
-
 abstract class WalletState {
   const WalletState();
 }
@@ -10,10 +9,15 @@ class WalletInitial extends WalletState {}
 class WalletLoading extends WalletState {}
 
 class WalletLoaded extends WalletState {
-
   final List<FtxCoin> ftxCoins;
 
   const WalletLoaded(this.ftxCoins);
+}
+
+class WalletDepositHistoryLoaded extends WalletState {
+  final List<FtxDepositHistory> ftxDepositHistory;
+
+  const WalletDepositHistoryLoaded(this.ftxDepositHistory);
 }
 
 class WalletError extends WalletState {

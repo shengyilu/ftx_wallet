@@ -1,33 +1,18 @@
-import 'package:chopper/chopper.dart';
-import 'package:ftx_wallet/data/api/ftx_data_converter.dart';
-import 'package:ftx_wallet/data/model/ftx_coin.dart';
 import 'package:built_collection/built_collection.dart';
-import '../ftx_header_interceptor.dart';
+import 'package:chopper/chopper.dart';
+import 'package:ftx_wallet/data/model/ftx_coin.dart';
+import 'package:ftx_wallet/data/model/ftx_deposit_history.dart';
 
 part 'ftx_wallet_api_service.chopper.dart';
 
 @ChopperApi()
 abstract class FtxWalletApiService extends ChopperService {
-
-  @Get(path:'/api/wallet/balances')
+  @Get(path: '/api/wallet/balances')
   Future<Response<BuiltList<FtxCoin>>> getBalance();
 
+  @Get(path: '/api/wallet/deposits')
+  Future<Response<BuiltList<FtxDepositHistory>>> getDeposits();
 
-
-  static FtxWalletApiService create() {
-    final client = ChopperClient(
-      baseUrl: 'https://ftx.com',
-      services: [
-        _$FtxWalletApiService(),
-      ],
-      errorConverter: FtxDataConverter(),
-      converter: FtxDataConverter(),
-      interceptors: [
-        HttpLoggingInterceptor(),
-        FtxHeaderInterceptor(),
-      ],
-    );
-    return _$FtxWalletApiService(client);
-  }
-
+  static FtxWalletApiService create([ChopperClient client]) =>
+      _$FtxWalletApiService(client);
 }

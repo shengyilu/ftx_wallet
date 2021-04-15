@@ -1,14 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:ftx_wallet/data/model/ftx_coin.dart';
-import 'package:ftx_wallet/data/repository/ftx_wallet_repository_impl.dart';
 import 'package:ftx_wallet/presentation/page/income_statement_page.dart';
 import 'package:logging/logging.dart';
 import 'package:provider/provider.dart';
 
 import 'bloc/wallet_bloc.dart';
-import 'data/api/wallet/ftx_wallet_api_service.dart';
-import 'data/model/serializers.dart';
 
 void main() {
   _setupLogging();
@@ -48,7 +44,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _incrementCounter() async {
     final walletBloc = context.read<WalletBloc>();
-    walletBloc.add(GetBalance());
+    //walletBloc.add(GetBalance());
+    walletBloc.add(GetDepositHistory());
     return;
     // final response =
     //     await Provider.of<FtxWalletApiService>(context, listen: false)
@@ -91,15 +88,13 @@ class _MyHomePageState extends State<MyHomePage> {
           },
         ),
       ),
-      floatingActionButton: Builder(
-        builder: (BuildContext context) {
-          return FloatingActionButton(
-            onPressed: _incrementCounter,
-            tooltip: 'Increment',
-            child: Icon(Icons.add),
-          );
-        }
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+      floatingActionButton: Builder(builder: (BuildContext context) {
+        return FloatingActionButton(
+          onPressed: _incrementCounter,
+          tooltip: 'Increment',
+          child: Icon(Icons.add),
+        );
+      }), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 }

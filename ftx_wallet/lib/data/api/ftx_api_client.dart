@@ -1,5 +1,6 @@
 import 'package:chopper/chopper.dart';
 import 'package:ftx_wallet/data/api/ftx_data_converter.dart';
+import 'package:ftx_wallet/data/api/subaccounts/ftx_subaccounts_api_service.dart';
 import 'package:ftx_wallet/data/api/wallet/ftx_wallet_api_service.dart';
 
 import 'ftx_header_interceptor.dart';
@@ -10,6 +11,7 @@ class FtxApiClient {
       baseUrl: 'https://ftx.com',
       services: [
         FtxWalletApiService.create(),
+        FtxSubaccountsApiService.create(),
       ],
       errorConverter: FtxDataConverter(),
       converter: FtxDataConverter(),

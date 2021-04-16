@@ -1,6 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:ftx_wallet/bloc/wallet_bloc.dart';
+import 'package:ftx_wallet/domain/usecases/get_deposit_history_usecase.dart';
 import 'package:ftx_wallet/presentation/bloc/income_statement_bloc.dart';
 
 class IncomeStatementPage extends StatefulWidget {
@@ -13,9 +15,10 @@ class IncomeStatementPage extends StatefulWidget {
 }
 
 class _IncomeStatementPageState extends State<IncomeStatementPage> {
+
   void _test(BuildContext context) async {
-    final incomeStatementBloc = context.read<IncomeStatementBloc>();
-    incomeStatementBloc.add(GetIncomeStatementEvent());
+    final bloc = context.read<IncomeStatementBloc>();
+    bloc.add(GetIncomeStatementEvent());
     return;
   }
 

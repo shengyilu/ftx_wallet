@@ -22,14 +22,16 @@ class FtxHeaderInterceptor implements RequestInterceptor {
 
   Map<String, String> _generateHeaders(Request request) {
     String timestamp = DateTime.now().millisecondsSinceEpoch.toString();
+    print("[Edward-interceptor2] ${request.headers}");
+    //var headers = new Map<String, String>();
+    var headers  = Map<String, String>.from(request.headers);
 
-    var headers = new Map<String, String>();
     headers[FTX_KEY] = API_KEY;
     headers[FTX_SIGN] = _getSignature(timestamp, request);
     headers[FTX_TS] = timestamp;
     //headers[FTX_SUBACCOUNT] = Uri.encodeComponent(SUBACCOUNT_BTMX3);
-    print(Uri.encodeComponent(SUBACCOUNT_BTMX3));
-
+    //print(Uri.encodeComponent(SUBACCOUNT_BTMX3));
+    print("[Edward-interceptor] ${headers}");
     return headers;
   }
 

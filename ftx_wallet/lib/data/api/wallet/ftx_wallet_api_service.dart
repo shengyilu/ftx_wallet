@@ -10,6 +10,10 @@ abstract class FtxWalletApiService extends ChopperService {
   @Get(path: '/api/wallet/balances')
   Future<Response<BuiltList<FtxCoin>>> getBalance();
 
+  @Get(path: '/api/wallet/balances')
+  Future<Response<BuiltList<FtxCoin>>> getBalanceBySubaccount(@Header('FTX-SUBACCOUNT') String subaccount);
+
+
   @Get(path: '/api/wallet/deposits')
   Future<Response<BuiltList<FtxDepositHistory>>> getDeposits();
 

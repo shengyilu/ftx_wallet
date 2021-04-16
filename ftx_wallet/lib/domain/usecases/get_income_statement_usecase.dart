@@ -17,7 +17,17 @@ class GetIncomeStatementUsecase implements UseCase<List<IncomeStatement>, NoPara
   Future<Either<Failure, List<IncomeStatement>>> call(NoParams params) async {
 
 
-    return null;
+    var subaccounts = await _repository.getDeposits();
+    print("[Edward] GetIncomeStatementUsecase: ${subaccounts}");
+
+    var is1 = IncomeStatement(coin: "Edward", totalNetUsd: 100.0, depositUsd: 33.0);
+    var is2 = IncomeStatement(coin: "Chaiy", totalNetUsd: 990.0, depositUsd: 311.0);
+    List<IncomeStatement> incomeStatements = [is1, is2];
+
+
+    return Right(incomeStatements);
   }
+
+
 
 }

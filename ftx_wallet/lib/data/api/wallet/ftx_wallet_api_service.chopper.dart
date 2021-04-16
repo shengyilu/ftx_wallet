@@ -20,6 +20,14 @@ class _$FtxWalletApiService extends FtxWalletApiService {
     return client.send<BuiltList<FtxCoin>, FtxCoin>($request);
   }
 
+  Future<Response<BuiltList<FtxCoin>>> getBalanceBySubaccount(
+      String subaccount) {
+    final $url = '/api/wallet/balances';
+    final $headers = {'FTX-SUBACCOUNT': subaccount};
+    final $request = Request('GET', $url, client.baseUrl, headers: $headers);
+    return client.send<BuiltList<FtxCoin>, FtxCoin>($request);
+  }
+
   Future<Response<BuiltList<FtxDepositHistory>>> getDeposits() {
     final $url = '/api/wallet/deposits';
     final $request = Request('GET', $url, client.baseUrl);

@@ -68,4 +68,12 @@ class IncomeStatement {
 
 //</editor-fold>
 
+  static Map<String, String> getColumnName() {
+    return {
+      'coin': 'Coin',
+      'totalNetUsd': 'Total Value',
+      'depositUsd': 'Deposit Value'
+    };
+    //statement(s)
+  }
 }

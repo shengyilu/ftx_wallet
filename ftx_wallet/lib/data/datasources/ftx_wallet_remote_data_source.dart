@@ -6,9 +6,11 @@ import 'package:ftx_wallet/data/api/wallet/ftx_wallet_api_service.dart';
 import 'package:ftx_wallet/data/model/ftx_coin.dart';
 import 'package:ftx_wallet/data/model/ftx_deposit_history.dart';
 import 'package:ftx_wallet/data/model/ftx_subaccount.dart';
+import 'package:ftx_wallet/data/model/serializers.dart';
 
 abstract class FtxWalletRemoteDataSource {
-  Future<List<FtxCoin>> fetchBalance();
+  Future<List<FtxCoin>> getBalance(String subaccount);
+  Future<Map<String, List<FtxCoin>>> getAllBalance();
   Future<List<FtxDepositHistory>> getDepositHistory();
   Future<List<FtxSubaccount>> getAllSubaccounts();
 }
@@ -24,16 +26,14 @@ class FtxWalletRemoteDataSourceImpl implements FtxWalletRemoteDataSource {
 
     this._ftxWalletApiService = _client.getService<FtxWalletApiService>();
 
-    this._ftxSubaccountsApiService = _client.getService<FtxSubaccountsApiService>();
+    this._ftxSubaccountsApiService =
+        _client.getService<FtxSubaccountsApiService>();
   }
 
   @override
-  Future<List<FtxCoin>> fetchBalance() async {
-    // Response<BuiltList<FtxCoin>> response =
-    //     await _ftxWalletApiService.getBalance();
-
+  Future<List<FtxCoin>> getBalance(String subaccount) async {
     Response<BuiltList<FtxCoin>> response =
-      await _ftxWalletApiService.getBalanceBySubaccount("BTMX-3");
+        await _ftxWalletApiService.getBalance(subaccount);
     List<FtxCoin> ftxCoins = response.body.toList();
     print("[Edward] ftxCoins:${ftxCoins}");
     return ftxCoins;
@@ -57,5 +57,34 @@ class FtxWalletRemoteDataSourceImpl implements FtxWalletRemoteDataSource {
     return ftxSubaccounts;
   }
 
+  @override
+  Future<Map<String, List<FtxCoin>>> getAllBalance() async {
+    Response<Map<String, dynamic>> response =
+        await _ftxWalletApiService.getAllBalances();
 
+    Map<String, List<FtxCoin>> result = Map();
+    response.body.forEach((k, v) {
+      BuiltList<FtxCoin> ftxCoins = _deserializeListOf<FtxCoin>(v);
+      result[k] = ftxCoins.toList();
+    });
+
+    return result;
+  }
+
+  BuiltList<InnerType> _deserializeListOf<InnerType>(
+    List dynamicList,
+  ) {
+    return BuiltList<InnerType>(
+      dynamicList.map((element) => _deserialize<InnerType>(element)),
+    );
+  }
+
+  InnerType _deserialize<InnerType>(
+    Map<String, dynamic> value,
+  ) {
+    return serializers.deserializeWith<InnerType>(
+      serializers.serializerForType(InnerType),
+      value,
+    );
+  }
 }

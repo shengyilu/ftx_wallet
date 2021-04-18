@@ -19,36 +19,22 @@ class FtxWalletRepositoryImpl implements WalletRepository {
   }
 
   @override
-  Future<Either<Failure, List<FtxCoin>>> fetchBalance() async {
-    if (await _networkInfo.isConnected) {
-      try {
-        return Right(await _ftxWalletRemoteDataSourceImpl.fetchBalance());
-      } catch (e) {
-        String failedMessage = 'unknown';
-        if (e is Response) {
-          failedMessage = e.body;
-        }
-        return Left(ServerFailure(failedMessage));
-      }
-    } else {
-      return Left(NetworkFailure());
+  Future<Either<Failure, List<FtxCoin>>> getBalance(String subaccount) async {
+    try {
+      return Right(await _ftxWalletRemoteDataSourceImpl.getBalance(subaccount));
+    } on Response catch (e) {
+      var failedMessage = e.body;
+      return Left(ServerFailure(failedMessage));
     }
   }
 
   @override
   Future<Either<Failure, List<FtxDepositHistory>>> getDeposits() async {
-    if (await _networkInfo.isConnected) {
-      try {
-        return Right(await _ftxWalletRemoteDataSourceImpl.getDepositHistory());
-      } catch (e) {
-        String failedMessage = 'unknown';
-        if (e is Response) {
-          failedMessage = e.body;
-        }
-        return Left(ServerFailure(failedMessage));
-      }
-    } else {
-      return Left(NetworkFailure());
+    try {
+      return Right(await _ftxWalletRemoteDataSourceImpl.getDepositHistory());
+    } on Response catch (e) {
+      var failedMessage = e.body;
+      return Left(ServerFailure(failedMessage));
     }
   }
 
@@ -69,20 +55,16 @@ class FtxWalletRepositoryImpl implements WalletRepository {
     }
   }
 
-
   @override
   Future<Either<Failure, List<IncomeStatement>>> getIncomeStatement() async {
     if (await _networkInfo.isConnected) {
       try {
-
-
-
-
-        var is1 = IncomeStatement(coin: "Edward", totalNetUsd: 100.0, depositUsd: 33.0);
-        var is2 = IncomeStatement(coin: "Chaiy", totalNetUsd: 990.0, depositUsd: 311.0);
+        var is1 = IncomeStatement(
+            coin: "Edward", totalNetUsd: 100.0, depositUsd: 33.0);
+        var is2 = IncomeStatement(
+            coin: "Chaiy", totalNetUsd: 990.0, depositUsd: 311.0);
 
         List incomeStatements = [is1, is2];
-
 
         return Right(incomeStatements);
       } catch (e) {
@@ -96,5 +78,14 @@ class FtxWalletRepositoryImpl implements WalletRepository {
       return Left(NetworkFailure());
     }
   }
-  
+
+  @override
+  Future<Either<Failure, Map<String, List<FtxCoin>>>> getAllBalances() async {
+    try {
+      return Right(await _ftxWalletRemoteDataSourceImpl.getAllBalance());
+    } on Response catch (e) {
+      var failedMessage = e.body;
+      return Left(ServerFailure(failedMessage));
+    }
+  }
 }

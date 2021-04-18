@@ -10,9 +10,8 @@ class FtxHeaderInterceptor implements RequestInterceptor {
   static const String FTX_TS = "FTX-TS";
   static const String FTX_SUBACCOUNT = "FTX-SUBACCOUNT";
 
-  static const String API_KEY = "--";
-  static const String API_SECRET = "--";
-  static const String SUBACCOUNT_BTMX3 = "BTMX-3";
+  static const String API_KEY = "_snH4RtUiLbUkJ10CvEJUL8Fsf9TJxiBIO6BLn5u";
+  static const String API_SECRET = "7Z-PggSRPFP77eED18c_gFd2-lmUnDOCWgXcQvKH";
 
   @override
   FutureOr<Request> onRequest(Request request) async {
@@ -22,16 +21,10 @@ class FtxHeaderInterceptor implements RequestInterceptor {
 
   Map<String, String> _generateHeaders(Request request) {
     String timestamp = DateTime.now().millisecondsSinceEpoch.toString();
-    print("[Edward-interceptor2] ${request.headers}");
-    //var headers = new Map<String, String>();
-    var headers  = Map<String, String>.from(request.headers);
-
+    var headers = Map<String, String>.from(request.headers);
     headers[FTX_KEY] = API_KEY;
     headers[FTX_SIGN] = _getSignature(timestamp, request);
     headers[FTX_TS] = timestamp;
-    //headers[FTX_SUBACCOUNT] = Uri.encodeComponent(SUBACCOUNT_BTMX3);
-    //print(Uri.encodeComponent(SUBACCOUNT_BTMX3));
-    print("[Edward-interceptor] ${headers}");
     return headers;
   }
 

@@ -33,7 +33,11 @@ class _IncomeStatementPageState extends State<IncomeStatementPage> {
               margin: EdgeInsets.all(10.0),
               child: Builder(
                 builder: (BuildContext context) {
-                  return createDataTable(context);
+                  final state = context.watch<IncomeStatementBloc>().state;
+                  if (state is IncomeStatementLoaded) {
+                    return createDataTable(state.incomeStatement);
+                  }
+                  return Text("Nothing to show");
                 },
               )),
           floatingActionButton: Builder(builder: (BuildContext context) {
@@ -59,40 +63,38 @@ class _IncomeStatementPageState extends State<IncomeStatementPage> {
     return columns;
   }
 
-  Widget createDataTable(BuildContext context) {
-    final state = context.watch<IncomeStatementBloc>().state;
-    if (state is IncomeStatementLoaded) {}
+  List<DataRow> _createRow(List<IncomeStatement> incomeStatements) {
+    var columns = <DataRow>[];
+    incomeStatements.forEach((incomeStatement) {
+      columns.add(DataRow(
+        cells: _creaetDataCells(incomeStatement),
+      ));
+    });
+    return columns;
+  }
 
-    return DataTable(
-      // Use the default value.,
-      columns: [
-        DataColumn(label: Text('Coin')),
-        DataColumn(label: Text('Total Value')),
-        DataColumn(label: Text('Deposit Value')),
-      ],
-      rows: [
-        DataRow(
-          cells: <DataCell>[
-            DataCell(Text('Sarah')),
-            DataCell(Text('19')),
-            DataCell(Text('Student')),
-          ],
+  List<DataCell> _creaetDataCells(IncomeStatement incomeStatement) {
+    var cells = <DataCell>[];
+    cells.add(DataCell(Text(incomeStatement.coin)));
+    cells.add(DataCell(Text(incomeStatement.totalNetUsd.toString())));
+    cells.add(DataCell(Text(incomeStatement.depositUsd.toString())));
+    return cells;
+  }
+
+
+
+  Widget createDataTable(List<IncomeStatement> incomeStatements) {
+
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: SingleChildScrollView(
+        scrollDirection: Axis.vertical,
+        child: DataTable(
+          // Use the default value.,
+          columns: _createColumn(),
+          rows: _createRow(incomeStatements),
         ),
-        DataRow(
-          cells: <DataCell>[
-            DataCell(Text('Janine')),
-            DataCell(Text('43')),
-            DataCell(Text('Professor')),
-          ],
-        ),
-        DataRow(
-          cells: <DataCell>[
-            DataCell(Text('William')),
-            DataCell(Text('27')),
-            DataCell(Text('Associate Professor')),
-          ],
-        ),
-      ],
+      ),
     );
   }
 }

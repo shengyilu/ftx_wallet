@@ -26,4 +26,12 @@ class GetIncomeStatementUsecase
 
     return Right(incomeStatements);
   }
+
+  Future<Map<String, List<FtxDepositHistory>>> _getAllDepositHistory() async {
+    var deposits = Map<String, List<FtxDepositHistory>>();
+
+
+    return deposits;
+  }
+
 }

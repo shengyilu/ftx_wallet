@@ -35,7 +35,7 @@ class FtxWalletRemoteDataSourceImpl implements FtxWalletRemoteDataSource {
     Response<BuiltList<FtxCoin>> response =
         await _ftxWalletApiService.getBalance(subaccount);
     List<FtxCoin> ftxCoins = response.body.toList();
-    print("[Edward] ftxCoins:${ftxCoins}");
+    print("[Edward-RemoteDataSource] FtxCoin:${ftxCoins}");
     return ftxCoins;
   }
 
@@ -44,7 +44,7 @@ class FtxWalletRemoteDataSourceImpl implements FtxWalletRemoteDataSource {
     Response<BuiltList<FtxDepositHistory>> response =
         await _ftxWalletApiService.getDeposits();
     List<FtxDepositHistory> ftxDeposits = response.body.toList();
-    print("[Edward] ftxDeposits:${ftxDeposits}");
+    print("[Edward-RemoteDataSource] FtxDepositHistory:${ftxDeposits.length}");
     return ftxDeposits;
   }
 
@@ -53,7 +53,7 @@ class FtxWalletRemoteDataSourceImpl implements FtxWalletRemoteDataSource {
     Response<BuiltList<FtxSubaccount>> response =
         await _ftxSubaccountsApiService.getAllSubaccounts();
     List<FtxSubaccount> ftxSubaccounts = response.body.toList();
-    print("[Edward] ftxDeposits:${ftxSubaccounts}");
+    print("[Edward-RemoteDataSource] FtxSubaccount:${ftxSubaccounts}");
     return ftxSubaccounts;
   }
 

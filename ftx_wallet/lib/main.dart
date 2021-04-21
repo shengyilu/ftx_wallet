@@ -1,14 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ftx_wallet/presentation/page/income_statement_page.dart';
+import 'package:hive/hive.dart';
 import 'package:logging/logging.dart';
+import 'package:path_provider/path_provider.dart' as path_provider;
 import 'package:provider/provider.dart';
+import 'package:super_easy_permissions/super_easy_permissions.dart';
 
 import 'bloc/wallet_bloc.dart';
 
-void main() {
+void main() async {
   _setupLogging();
   runApp(MyApp());
+  _initDatabase();
+}
+
+Future<void> _initDatabase() async {
+  final appDocumentDir = await path_provider.getApplicationDocumentsDirectory();
+  Hive.init(appDocumentDir.path);
 }
 
 void _setupLogging() {

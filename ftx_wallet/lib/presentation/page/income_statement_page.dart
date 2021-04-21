@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ftx_wallet/data/model/transform/income_statement.dart';
 import 'package:ftx_wallet/presentation/bloc/income_statement_bloc.dart';
+import 'package:hive/hive.dart';
+import 'package:path_provider/path_provider.dart';
 
 class IncomeStatementPage extends StatefulWidget {
   final String title;
@@ -15,6 +17,10 @@ class IncomeStatementPage extends StatefulWidget {
 
 class _IncomeStatementPageState extends State<IncomeStatementPage> {
   void _test(BuildContext context) async {
+
+    final appDocumentDir = await getApplicationDocumentsDirectory();
+    Hive.init(appDocumentDir.path);
+
     final bloc = context.read<IncomeStatementBloc>();
     bloc.add(GetIncomeStatementEvent());
     return;
@@ -22,6 +28,9 @@ class _IncomeStatementPageState extends State<IncomeStatementPage> {
 
   @override
   Widget build(BuildContext context) {
+
+
+
     return BlocProvider(
       create: (_) => IncomeStatementBloc(),
       child: Builder(builder: (BuildContext context) {

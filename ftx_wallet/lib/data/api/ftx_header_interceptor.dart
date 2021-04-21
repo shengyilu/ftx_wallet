@@ -10,8 +10,8 @@ class FtxHeaderInterceptor implements RequestInterceptor {
   static const String FTX_TS = "FTX-TS";
   static const String FTX_SUBACCOUNT = "FTX-SUBACCOUNT";
 
-  static const String API_KEY = "tpMAH-GPI6g8butzuLj78lNRIGuEdM-ei8uaUFdZ";
-  static const String API_SECRET = "dP0nmrbhF5h8qi35s06ThP2H4wzdY4O0WmR7NhdJ";
+  static const String API_KEY = "";
+  static const String API_SECRET = "";
 
   @override
   FutureOr<Request> onRequest(Request request) async {

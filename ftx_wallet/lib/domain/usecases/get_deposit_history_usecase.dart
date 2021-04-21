@@ -14,4 +14,18 @@ class GetDeposiHistoryUseCase
   Future<Either<Failure, List<FtxDepositHistory>>> call(NoParams params) {
     return _repository.getDeposits();
   }
+
+
+  Future<Map<String, List<FtxDepositHistory>>> _getAllDepositHistory() async {
+    var deposits = Map<String, List<FtxDepositHistory>>();
+    var subaccounts = await _repository.getAllSubaccounts();
+    subaccounts.fold(
+            (failure) => null,
+            (subaccounts) => null);
+    subaccounts.forEach((r) {
+
+    });
+
+    return deposits;
+  }
 }

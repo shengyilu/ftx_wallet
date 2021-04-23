@@ -27,10 +27,21 @@ class _$FtxWalletApiService extends FtxWalletApiService {
     return client.send<Map<String, dynamic>, Map<String, dynamic>>($request);
   }
 
-  Future<Response<BuiltList<FtxDepositHistory>>> getDeposits() {
+  Future<Response<BuiltList<FtxDepositHistory>>> getDeposits(
+      String subaccount) {
     final $url = '/api/wallet/deposits';
-    final $request = Request('GET', $url, client.baseUrl);
+    final $headers = {'FTX-SUBACCOUNT': subaccount};
+    final $request = Request('GET', $url, client.baseUrl, headers: $headers);
     return client
         .send<BuiltList<FtxDepositHistory>, FtxDepositHistory>($request);
+  }
+
+  Future<Response<BuiltList<FtxWithdrawalHistory>>> getWithdrawals(
+      String subaccount) {
+    final $url = '/api/wallet/withdrawals';
+    final $headers = {'FTX-SUBACCOUNT': subaccount};
+    final $request = Request('GET', $url, client.baseUrl, headers: $headers);
+    return client
+        .send<BuiltList<FtxWithdrawalHistory>, FtxWithdrawalHistory>($request);
   }
 }

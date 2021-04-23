@@ -1,31 +1,41 @@
 import 'package:flutter/foundation.dart';
 
 class IncomeStatement {
-  final String coin;
+  final String accountName;
   final double totalNetUsd;
   final double depositUsd;
+
+
+  static Map<String, String> getColumnName() {
+    return {
+      'accountName': 'Account',
+      'totalNetUsd': 'Total Value',
+      'depositUsd': 'Deposit Value'
+    };
+    //statement(s)
+  }
 
 //<editor-fold desc="Data Methods" defaultstate="collapsed">
 
   const IncomeStatement({
-    @required this.coin,
+    @required this.accountName,
     @required this.totalNetUsd,
     @required this.depositUsd,
   });
 
   IncomeStatement copyWith({
-    String coin,
+    String accountName,
     double totalNetUsd,
     double depositUsd,
   }) {
-    if ((coin == null || identical(coin, this.coin)) &&
+    if ((accountName == null || identical(accountName, this.accountName)) &&
         (totalNetUsd == null || identical(totalNetUsd, this.totalNetUsd)) &&
         (depositUsd == null || identical(depositUsd, this.depositUsd))) {
       return this;
     }
 
     return new IncomeStatement(
-      coin: coin ?? this.coin,
+      accountName: accountName ?? this.accountName,
       totalNetUsd: totalNetUsd ?? this.totalNetUsd,
       depositUsd: depositUsd ?? this.depositUsd,
     );
@@ -33,7 +43,7 @@ class IncomeStatement {
 
   @override
   String toString() {
-    return 'IncomeStatement{coin: $coin, totalNetUsd: $totalNetUsd, depositUsd: $depositUsd}';
+    return 'IncomeStatement{accountName: $accountName, totalNetUsd: $totalNetUsd, depositUsd: $depositUsd}';
   }
 
   @override
@@ -41,17 +51,17 @@ class IncomeStatement {
       identical(this, other) ||
       (other is IncomeStatement &&
           runtimeType == other.runtimeType &&
-          coin == other.coin &&
+          accountName == other.accountName &&
           totalNetUsd == other.totalNetUsd &&
           depositUsd == other.depositUsd);
 
   @override
   int get hashCode =>
-      coin.hashCode ^ totalNetUsd.hashCode ^ depositUsd.hashCode;
+      accountName.hashCode ^ totalNetUsd.hashCode ^ depositUsd.hashCode;
 
   factory IncomeStatement.fromMap(Map<String, dynamic> map) {
     return new IncomeStatement(
-      coin: map['coin'] as String,
+      accountName: map['accountName'] as String,
       totalNetUsd: map['totalNetUsd'] as double,
       depositUsd: map['depositUsd'] as double,
     );
@@ -60,7 +70,7 @@ class IncomeStatement {
   Map<String, dynamic> toMap() {
     // ignore: unnecessary_cast
     return {
-      'coin': this.coin,
+      'accountName': this.accountName,
       'totalNetUsd': this.totalNetUsd,
       'depositUsd': this.depositUsd,
     } as Map<String, dynamic>;
@@ -68,12 +78,4 @@ class IncomeStatement {
 
 //</editor-fold>
 
-  static Map<String, String> getColumnName() {
-    return {
-      'coin': 'Coin',
-      'totalNetUsd': 'Total Value',
-      'depositUsd': 'Deposit Value'
-    };
-    //statement(s)
-  }
 }

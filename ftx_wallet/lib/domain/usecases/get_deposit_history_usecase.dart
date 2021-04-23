@@ -12,7 +12,7 @@ class GetDeposiHistoryUseCase
 
   @override
   Future<Either<Failure, List<FtxDepositHistory>>> call(NoParams params) {
-    return _repository.getDeposits();
+    return _repository.getDeposits("BTMX-3");
   }
 
 

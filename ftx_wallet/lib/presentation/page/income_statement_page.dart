@@ -84,9 +84,9 @@ class _IncomeStatementPageState extends State<IncomeStatementPage> {
 
   List<DataCell> _creaetDataCells(IncomeStatement incomeStatement) {
     var cells = <DataCell>[];
-    cells.add(DataCell(Text(incomeStatement.coin)));
-    cells.add(DataCell(Text(incomeStatement.totalNetUsd.toString())));
-    cells.add(DataCell(Text(incomeStatement.depositUsd.toString())));
+    cells.add(DataCell(Text(incomeStatement.accountName)));
+    cells.add(DataCell(Text(incomeStatement.totalNetUsd.toStringAsFixed(3))));
+    cells.add(DataCell(Text(incomeStatement.depositUsd.toStringAsFixed(3))));
     return cells;
   }
 

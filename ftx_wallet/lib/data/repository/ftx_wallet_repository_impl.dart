@@ -9,7 +9,6 @@ import 'package:ftx_wallet/core/network/network_info.dart';
 import 'package:ftx_wallet/data/datasources/ftx_wallet_remote_data_source.dart';
 import 'package:ftx_wallet/data/model/ftx_coin.dart';
 import 'package:ftx_wallet/data/model/ftx_deposit_history.dart';
-import 'package:ftx_wallet/data/model/ftx_subaccount.dart';
 import 'package:ftx_wallet/data/model/ftx_withdrawal_history.dart';
 import 'package:ftx_wallet/data/model/transform/income_statement.dart';
 import 'package:ftx_wallet/domain/repositories/wallet_repository.dart';
@@ -38,9 +37,11 @@ class FtxWalletRepositoryImpl implements WalletRepository {
   }
 
   @override
-  Future<Either<Failure, List<FtxDepositHistory>>> getDeposits(String subaccount) async {
+  Future<Either<Failure, Map<String, List<FtxDepositHistory>>>> getDeposits(
+      String subaccount) async {
     try {
-      return Right(await _ftxWalletRemoteDataSourceImpl.getDepositHistory(subaccount));
+      return Right(
+          await _ftxWalletRemoteDataSourceImpl.getDepositHistory(subaccount));
     } on Response catch (e) {
       var failedMessage = e.body;
       return Left(ServerFailure(failedMessage));
@@ -52,10 +53,10 @@ class FtxWalletRepositoryImpl implements WalletRepository {
     if ((await _accountInfoChecker.isUpdateAccountInfo())) {
       // Get from remote
       try {
-        var remoteSubaccounts = await _ftxWalletRemoteDataSourceImpl.getAllSubaccounts();
+        var remoteSubaccounts =
+            await _ftxWalletRemoteDataSourceImpl.getAllSubaccounts();
         await _hiveHelper.saveSubaccounts(remoteSubaccounts);
         await _accountInfoChecker.updateSyncTime(DateTime.now());
-        print("[Edward] remoteSubaccounts:${remoteSubaccounts}");
         return Right(remoteSubaccounts);
       } catch (e) {
         await _accountInfoChecker.updateSyncTime(null);
@@ -68,13 +69,9 @@ class FtxWalletRepositoryImpl implements WalletRepository {
     } else {
       // Get from local
       var localSubaccounts = await _hiveHelper.getSubaccounts();
-      print("[Edward] localSubaccounts:${localSubaccounts}");
       return Right(localSubaccounts);
     }
-
   }
-
-
 
   @override
   Future<Either<Failure, List<IncomeStatement>>> getIncomeStatement() async {
@@ -111,13 +108,14 @@ class FtxWalletRepositoryImpl implements WalletRepository {
   }
 
   @override
-  Future<Either<Failure, List<FtxWithdrawalHistory>>> getWithdrawals(String subaccount) async {
+  Future<Either<Failure, Map<String, List<FtxWithdrawalHistory>>>>
+      getWithdrawals(String subaccount) async {
     try {
-      return Right(await _ftxWalletRemoteDataSourceImpl.getWithdrawalHistory(subaccount));
+      return Right(await _ftxWalletRemoteDataSourceImpl
+          .getWithdrawalHistory(subaccount));
     } on Response catch (e) {
       var failedMessage = e.body;
       return Left(ServerFailure(failedMessage));
     }
   }
-
 }

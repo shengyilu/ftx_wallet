@@ -12,8 +12,10 @@ import 'package:ftx_wallet/data/model/serializers.dart';
 abstract class FtxWalletRemoteDataSource {
   Future<List<FtxCoin>> getBalance(String subaccount);
   Future<Map<String, List<FtxCoin>>> getAllBalance();
-  Future<List<FtxDepositHistory>> getDepositHistory(String subaccount);
-  Future<List<FtxWithdrawalHistory>> getWithdrawalHistory(String subaccount);
+  Future<Map<String, List<FtxDepositHistory>>> getDepositHistory(
+      String subaccount);
+  Future<Map<String, List<FtxWithdrawalHistory>>> getWithdrawalHistory(
+      String subaccount);
   Future<List<String>> getAllSubaccounts();
 }
 
@@ -41,11 +43,13 @@ class FtxWalletRemoteDataSourceImpl implements FtxWalletRemoteDataSource {
   }
 
   @override
-  Future<List<FtxDepositHistory>> getDepositHistory(String subaccount) async {
+  Future<Map<String, List<FtxDepositHistory>>> getDepositHistory(
+      String subaccount) async {
     Response<BuiltList<FtxDepositHistory>> response =
         await _ftxWalletApiService.getDeposits(subaccount);
     List<FtxDepositHistory> ftxDeposits = response.body.toList();
-    return ftxDeposits;
+
+    return {subaccount: ftxDeposits};
   }
 
   @override
@@ -92,11 +96,11 @@ class FtxWalletRemoteDataSourceImpl implements FtxWalletRemoteDataSource {
   }
 
   @override
-  Future<List<FtxWithdrawalHistory>> getWithdrawalHistory(String subaccount) async {
+  Future<Map<String, List<FtxWithdrawalHistory>>> getWithdrawalHistory(
+      String subaccount) async {
     Response<BuiltList<FtxWithdrawalHistory>> response =
         await _ftxWalletApiService.getWithdrawals(subaccount);
-    List<FtxWithdrawalHistory> ftxDeposits = response.body.toList();
-    print("[Edward] getWithdrawalHistory:${getWithdrawalHistory}");
-    return ftxDeposits;
+    List<FtxWithdrawalHistory> ftxWithdrawals = response.body.toList();
+    return {subaccount: ftxWithdrawals};
   }
 }

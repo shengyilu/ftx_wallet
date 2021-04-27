@@ -79,20 +79,31 @@ class GetIncomeStatementUsecase
 
   Future<Either<Failure, Map<String, double>>> _getAccountInitInvestUsd(
       List<String> subaccounts) async {
-    var failureOrWithdrawals = await _getAllWithdrawalHistory(subaccounts);
-    if (failureOrWithdrawals.isLeft()) {
-      Left(failureOrWithdrawals.leftMap((l) => l));
-    }
-    var withdrawls = failureOrWithdrawals.getOrElse(null);
 
-    var failureOrDeposits = await _getAllDepositHistory(subaccounts);
-    if (failureOrDeposits.isLeft()) {
-      Left(failureOrDeposits.leftMap((l) => l));
+    List<Future<Either<Failure, Map<String, double>>>> futures = [
+      _getAllWithdrawalHistory(subaccounts),
+      _getAllDepositHistory(subaccounts)
+    ];
+    final results = await Future.wait(futures);
+
+    var failureOrWithdrawals = results[0].fold(
+            (failure) => failure,
+            (withdrawals) => withdrawals);
+
+    if (failureOrWithdrawals is Failure) {
+      return Left(failureOrWithdrawals);
     }
-    var deposits = failureOrDeposits.getOrElse(null);
+    var withdrawls = failureOrWithdrawals as Map<String, double>;
+
+    var failureOrDeposits = results[1].fold(
+            (failure) => failure,
+            (deposits) => deposits);
+    if (failureOrDeposits is Failure) {
+      return Left(failureOrDeposits);
+    }
+    var deposits = failureOrDeposits as Map<String, double>;
 
     final initUsd = Map<String, double>();
-
     double totalUsd = 0;
     subaccounts.forEach((account) {
       double totalDepositUsd = deposits[account];

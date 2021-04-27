@@ -5,7 +5,7 @@ import 'package:logging/logging.dart';
 import 'package:path_provider/path_provider.dart' as path_provider;
 
 void main() async {
-  //_setupLogging();
+  _setupLogging();
   runApp(MyApp());
   _initDatabase();
 }

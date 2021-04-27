@@ -43,6 +43,7 @@ class GetAccountWithdrawalHistoryUsecase
         return Left(failureOr);
       }
     });
+    print("[Edward] getWithdrawals:${withdrawals}");
 
     return Right(withdrawals);
   }

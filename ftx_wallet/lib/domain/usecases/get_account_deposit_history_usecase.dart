@@ -39,6 +39,7 @@ class GetAccountDepositHistoryUsecase
         return Left(failureOr);
       }
     });
+    print("[Edward] getDeposit:${deposits}");
 
     return Right(deposits);
   }

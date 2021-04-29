@@ -4,22 +4,16 @@ import 'package:ftx_wallet/core/usecase/usecase.dart';
 import 'package:ftx_wallet/data/model/transform/income_statement.dart';
 import 'package:ftx_wallet/domain/repositories/wallet_repository.dart';
 import 'package:ftx_wallet/domain/usecases/get_account_balance_usecase.dart';
-import 'package:ftx_wallet/domain/usecases/get_account_withdrawal_history_usecase.dart';
-
-import 'get_account_deposit_history_usecase.dart';
+import 'package:ftx_wallet/domain/usecases/get_account_init_invest_usecase.dart';
 
 class GetIncomeStatementUsecase
     implements UseCase<List<IncomeStatement>, NoParams> {
   final WalletRepository _repository;
-  GetAccountWithdrawalHistoryUsecase _getAccountWithdrawalHistoryUsecase;
-  GetAccountDepositHistoryUsecase _getAccountDepositHistoryUsecase;
+  GetAccountInitInvestUsecase _getAccountInitInvestUsecase;
   GetAccountBalanceUsecase _getAccountBalanceUsecase;
 
   GetIncomeStatementUsecase(this._repository) {
-    _getAccountWithdrawalHistoryUsecase =
-        GetAccountWithdrawalHistoryUsecase(_repository);
-    _getAccountDepositHistoryUsecase =
-        GetAccountDepositHistoryUsecase(_repository);
+    _getAccountInitInvestUsecase = GetAccountInitInvestUsecase(_repository);
     _getAccountBalanceUsecase = GetAccountBalanceUsecase(_repository);
   }
 
@@ -37,14 +31,19 @@ class GetIncomeStatementUsecase
     }
     var subaccounts = failureOrSubaccounts as List<String>;
 
-    var failureOrTotalUsd = (await _getAccountInitInvestUsd(subaccounts))
-        .fold((failure) => failure, (totalUsd) => totalUsd);
+    var futures = [
+      _getAccountInitInvestUsd(subaccounts),
+      _getAccountBalanceUsd()
+    ];
+    final results = await Future.wait(futures);
+
+    var failureOrTotalUsd = results[0].fold((failure) => failure, (totalUsd) => totalUsd);
     if (failureOrTotalUsd is Failure) {
       return Left(failureOrTotalUsd);
     }
     var totalUsd = failureOrTotalUsd as Map<String, double>;
 
-    var failureOrTotalNetUsd = (await _getAccountBalanceUsd())
+    var failureOrTotalNetUsd = results[1]
         .fold((failure) => failure, (totalNetUsd) => totalNetUsd);
     if (failureOrTotalNetUsd is Failure) {
       return Left(failureOrTotalNetUsd);
@@ -80,52 +79,9 @@ class GetIncomeStatementUsecase
   Future<Either<Failure, Map<String, double>>> _getAccountInitInvestUsd(
       List<String> subaccounts) async {
 
-    List<Future<Either<Failure, Map<String, double>>>> futures = [
-      _getAllWithdrawalHistory(subaccounts),
-      _getAllDepositHistory(subaccounts)
-    ];
-    final results = await Future.wait(futures);
-
-    var failureOrWithdrawals = results[0].fold(
-            (failure) => failure,
-            (withdrawals) => withdrawals);
-
-    if (failureOrWithdrawals is Failure) {
-      return Left(failureOrWithdrawals);
-    }
-    var withdrawls = failureOrWithdrawals as Map<String, double>;
-
-    var failureOrDeposits = results[1].fold(
-            (failure) => failure,
-            (deposits) => deposits);
-    if (failureOrDeposits is Failure) {
-      return Left(failureOrDeposits);
-    }
-    var deposits = failureOrDeposits as Map<String, double>;
-
-    final initUsd = Map<String, double>();
-    double totalUsd = 0;
-    subaccounts.forEach((account) {
-      double totalDepositUsd = deposits[account];
-      double totalWithdrawalUsd = withdrawls[account];
-      totalUsd = totalDepositUsd - totalWithdrawalUsd;
-      initUsd[account] = totalUsd;
-    });
-
-    return Right(initUsd);
+    return (await _getAccountInitInvestUsecase(InitInvestParams(allSubaccounts: subaccounts))).fold(
+            (failure) => Left(failure),
+            (initInvest) => Right(initInvest));
   }
 
-  Future<Either<Failure, Map<String, double>>> _getAllDepositHistory(
-      List<String> subaccounts) async {
-    return (await _getAccountDepositHistoryUsecase(
-            DepositParams(allSubaccounts: subaccounts, coin: "USD")))
-        .fold((failure) => Left(failure), (deposits) => Right(deposits));
-  }
-
-  Future<Either<Failure, Map<String, double>>> _getAllWithdrawalHistory(
-      List<String> subaccounts) async {
-    return (await _getAccountWithdrawalHistoryUsecase(
-            WithdrwalParams(allSubaccounts: subaccounts, coin: "USD")))
-        .fold((failure) => Left(failure), (withdrawals) => Right(withdrawals));
-  }
 }

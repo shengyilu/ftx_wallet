@@ -12,6 +12,7 @@ import 'package:ftx_wallet/data/model/ftx_deposit_history.dart';
 import 'package:ftx_wallet/data/model/ftx_withdrawal_history.dart';
 import 'package:ftx_wallet/data/model/transform/income_statement.dart';
 import 'package:ftx_wallet/domain/repositories/wallet_repository.dart';
+import 'package:hive/hive.dart';
 
 class FtxWalletRepositoryImpl implements WalletRepository {
   AccountInfoChecker _accountInfoChecker;
@@ -40,60 +41,52 @@ class FtxWalletRepositoryImpl implements WalletRepository {
   Future<Either<Failure, Map<String, List<FtxDepositHistory>>>> getDeposits(
       String subaccount) async {
     try {
-      return Right(
-          await _ftxWalletRemoteDataSourceImpl.getDepositHistory(subaccount));
-    } on Response catch (e) {
-      var failedMessage = e.body;
-      return Left(ServerFailure(failedMessage));
+      if ((await _accountInfoChecker.isUpdateDepositWithdrawalHistory())) {
+        try {
+          var remoteDepositHistories = await _ftxWalletRemoteDataSourceImpl.getDepositHistory(subaccount);
+          await _hiveHelper.saveDepositHistory(remoteDepositHistories);
+          await _accountInfoChecker.updateSyncTime(AccountInfoChecker.DEPOSIT_WITHDRAWAL_UPDATE_TIME, DateTime.now());
+          return Right(remoteDepositHistories);
+        } on Response catch (e) {
+          await _accountInfoChecker.updateSyncTime(AccountInfoChecker.DEPOSIT_WITHDRAWAL_UPDATE_TIME, null);
+          var failedMessage = e.body;
+          return Left(ServerFailure(failedMessage));
+        }
+      } else {
+        var localDepositHistories = await _hiveHelper.getDepositHistory(subaccount);
+        return Right(localDepositHistories);
+      }
+    } finally {
+      await _hiveHelper.close();
     }
   }
 
   @override
   Future<Either<Failure, List<String>>> getAllSubaccounts() async {
-    if ((await _accountInfoChecker.isUpdateAccountInfo())) {
-      // Get from remote
-      try {
-        var remoteSubaccounts =
-            await _ftxWalletRemoteDataSourceImpl.getAllSubaccounts();
-        await _hiveHelper.saveSubaccounts(remoteSubaccounts);
-        await _accountInfoChecker.updateSyncTime(DateTime.now());
-        return Right(remoteSubaccounts);
-      } catch (e) {
-        await _accountInfoChecker.updateSyncTime(null);
-        String failedMessage = 'unknown';
-        if (e is Response) {
-          failedMessage = e.body;
+    try {
+      if ((await _accountInfoChecker.isUpdateAccountInfo())) {
+        // Get from remote
+        try {
+          var remoteSubaccounts =
+          await _ftxWalletRemoteDataSourceImpl.getAllSubaccounts();
+          await _hiveHelper.saveSubaccounts(remoteSubaccounts);
+          await _accountInfoChecker.updateSyncTime(AccountInfoChecker.SUBACCOUT_UPDATE_TIME, DateTime.now());
+          return Right(remoteSubaccounts);
+        } catch (e) {
+          await _accountInfoChecker.updateSyncTime(AccountInfoChecker.SUBACCOUT_UPDATE_TIME, null);
+          String failedMessage = 'unknown';
+          if (e is Response) {
+            failedMessage = e.body;
+          }
+          return Left(ServerFailure(failedMessage));
         }
-        return Left(ServerFailure(failedMessage));
+      } else {
+        // Get from local
+        var localSubaccounts = await _hiveHelper.getSubaccounts();
+        return Right(localSubaccounts);
       }
-    } else {
-      // Get from local
-      var localSubaccounts = await _hiveHelper.getSubaccounts();
-      return Right(localSubaccounts);
-    }
-  }
-
-  @override
-  Future<Either<Failure, List<IncomeStatement>>> getIncomeStatement() async {
-    if (await _networkInfo.isConnected) {
-      try {
-        var is1 = IncomeStatement(
-            accountName: "Edward", totalNetUsd: 100.0, depositUsd: 33.0);
-        var is2 = IncomeStatement(
-            accountName: "Chaiy", totalNetUsd: 990.0, depositUsd: 311.0);
-
-        List incomeStatements = [is1, is2];
-
-        return Right(incomeStatements);
-      } catch (e) {
-        String failedMessage = 'unknown';
-        if (e is Response) {
-          failedMessage = e.body;
-        }
-        return Left(ServerFailure(failedMessage));
-      }
-    } else {
-      return Left(NetworkFailure());
+    } finally {
+      await _hiveHelper.close();
     }
   }
 
@@ -111,11 +104,27 @@ class FtxWalletRepositoryImpl implements WalletRepository {
   Future<Either<Failure, Map<String, List<FtxWithdrawalHistory>>>>
       getWithdrawals(String subaccount) async {
     try {
-      return Right(await _ftxWalletRemoteDataSourceImpl
-          .getWithdrawalHistory(subaccount));
-    } on Response catch (e) {
-      var failedMessage = e.body;
-      return Left(ServerFailure(failedMessage));
+      if ((await _accountInfoChecker.isUpdateDepositWithdrawalHistory())) {
+        try {
+          var remoteWithdrawals = await _ftxWalletRemoteDataSourceImpl
+              .getWithdrawalHistory(subaccount);
+          await _hiveHelper.saveWithdrawalHistory(remoteWithdrawals);
+          await _accountInfoChecker.updateSyncTime(AccountInfoChecker.DEPOSIT_WITHDRAWAL_UPDATE_TIME, DateTime.now());
+
+          return Right(remoteWithdrawals);
+        } on Response catch (e) {
+          await _accountInfoChecker.updateSyncTime(AccountInfoChecker.DEPOSIT_WITHDRAWAL_UPDATE_TIME, null);
+          var failedMessage = e.body;
+          return Left(ServerFailure(failedMessage));
+        }
+      } else {
+        // Get from local
+        var localWithdrawals = await _hiveHelper.getWithdrawalHistory(subaccount);
+        return Right(localWithdrawals);
+      }
+    } finally {
+      await _hiveHelper.close();
     }
+
   }
 }

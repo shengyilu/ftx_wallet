@@ -28,7 +28,6 @@ class GetAccountWithdrawalHistoryUsecase
       var failureOr = result.fold((failure) {
         return failure;
       }, (withdrawalMap) {
-        //withdrawals.addAll(withdrawal);
         withdrawalMap.forEach((key, ftxWithdrawalHistories) {
           double size = 0;
           ftxWithdrawalHistories.forEach((ftxWithdrawalHistory) {
@@ -43,8 +42,6 @@ class GetAccountWithdrawalHistoryUsecase
         return Left(failureOr);
       }
     });
-    print("[Edward] getWithdrawals:${withdrawals}");
-
     return Right(withdrawals);
   }
 }
@@ -56,5 +53,5 @@ class WithdrwalParams extends Equatable {
   WithdrwalParams({this.allSubaccounts, this.coin});
 
   @override
-  List<Object> get props => [allSubaccounts];
+  List<Object> get props => [allSubaccounts, coin];
 }

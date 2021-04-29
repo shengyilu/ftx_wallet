@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:ftx_wallet/data/datasources/local/model/ftx_deposit_history_local.dart';
+import 'package:ftx_wallet/data/datasources/local/model/ftx_withdrawal_history_local.dart';
 import 'package:ftx_wallet/presentation/page/income_statement_page.dart';
 import 'package:hive/hive.dart';
 import 'package:logging/logging.dart';
 import 'package:path_provider/path_provider.dart' as path_provider;
 
 void main() async {
-  _setupLogging();
+  //_setupLogging();
   runApp(MyApp());
   _initDatabase();
 }
@@ -13,6 +15,8 @@ void main() async {
 Future<void> _initDatabase() async {
   final appDocumentDir = await path_provider.getApplicationDocumentsDirectory();
   Hive.init(appDocumentDir.path);
+  Hive.registerAdapter(FtxDepositHistoryLocalAdapter());
+  Hive.registerAdapter(FtxWithdrawalHistoryLocalAdapter());
 }
 
 void _setupLogging() {

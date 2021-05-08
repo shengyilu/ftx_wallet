@@ -9,6 +9,7 @@ part of 'serializers.dart';
 Serializers _$serializers = (new Serializers().toBuilder()
       ..add(FtxCoin.serializer)
       ..add(FtxDepositHistory.serializer)
+      ..add(FtxFundingPayment.serializer)
       ..add(FtxSubaccount.serializer)
       ..add(FtxWithdrawalHistory.serializer))
     .build();

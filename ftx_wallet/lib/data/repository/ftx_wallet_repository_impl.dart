@@ -9,6 +9,7 @@ import 'package:ftx_wallet/core/network/network_info.dart';
 import 'package:ftx_wallet/data/datasources/ftx_wallet_remote_data_source.dart';
 import 'package:ftx_wallet/data/model/ftx_coin.dart';
 import 'package:ftx_wallet/data/model/ftx_deposit_history.dart';
+import 'package:ftx_wallet/data/model/ftx_funding_payment.dart';
 import 'package:ftx_wallet/data/model/ftx_withdrawal_history.dart';
 import 'package:ftx_wallet/data/model/transform/income_statement.dart';
 import 'package:ftx_wallet/domain/repositories/wallet_repository.dart';
@@ -126,5 +127,17 @@ class FtxWalletRepositoryImpl implements WalletRepository {
       await _hiveHelper.close();
     }
 
+  }
+
+  @override
+  Future<Either<Failure, Map<String, List<FtxFundingPayment>>>>
+      getFundingPayment(String subaccount) async {
+    try {
+      return Right(
+          await _ftxWalletRemoteDataSourceImpl.getFundingPayment(subaccount));
+    } on Response catch (e) {
+      var failedMessage = e.body;
+      return Left(ServerFailure(failedMessage));
+    }
   }
 }

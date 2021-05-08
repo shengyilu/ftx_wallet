@@ -56,5 +56,5 @@ class FtxDepositHistoryLocalAdapter
 
   @override
   // TODO: implement typeId
-  int typeId = 0;
+  int get typeId => 0;
 }

@@ -5,16 +5,19 @@ import 'package:ftx_wallet/data/model/transform/income_statement.dart';
 import 'package:ftx_wallet/domain/repositories/wallet_repository.dart';
 import 'package:ftx_wallet/domain/usecases/get_account_balance_usecase.dart';
 import 'package:ftx_wallet/domain/usecases/get_account_init_invest_usecase.dart';
+import 'package:ftx_wallet/domain/usecases/get_funding_payment_usecase.dart';
 
 class GetIncomeStatementUsecase
     implements UseCase<List<IncomeStatement>, NoParams> {
   final WalletRepository _repository;
   GetAccountInitInvestUsecase _getAccountInitInvestUsecase;
   GetAccountBalanceUsecase _getAccountBalanceUsecase;
+  GetFundingPaymentUsecase _getFundingPaymentUsecase;
 
   GetIncomeStatementUsecase(this._repository) {
     _getAccountInitInvestUsecase = GetAccountInitInvestUsecase(_repository);
     _getAccountBalanceUsecase = GetAccountBalanceUsecase(_repository);
+    _getFundingPaymentUsecase = GetFundingPaymentUsecase(_repository);
   }
 
   @override
@@ -33,29 +36,47 @@ class GetIncomeStatementUsecase
 
     var futures = [
       _getAccountInitInvestUsd(subaccounts),
-      _getAccountBalanceUsd()
+      _getAccountBalanceUsd(),
+      _getFundingPayment(subaccounts)
     ];
     final results = await Future.wait(futures);
 
-    var failureOrTotalUsd = results[0].fold((failure) => failure, (totalUsd) => totalUsd);
+    var failureOrTotalUsd =
+        results[0].fold((failure) => failure, (totalUsd) => totalUsd);
     if (failureOrTotalUsd is Failure) {
       return Left(failureOrTotalUsd);
     }
     var totalUsd = failureOrTotalUsd as Map<String, double>;
 
-    var failureOrTotalNetUsd = results[1]
-        .fold((failure) => failure, (totalNetUsd) => totalNetUsd);
+    var failureOrTotalNetUsd =
+        results[1].fold((failure) => failure, (totalNetUsd) => totalNetUsd);
     if (failureOrTotalNetUsd is Failure) {
       return Left(failureOrTotalNetUsd);
     }
     var totalNetUsd = failureOrTotalNetUsd as Map<String, double>;
 
+    var failureOrFundindPayments = results[2]
+        .fold((failure) => failure, (fundingPayments) => fundingPayments);
+    if (failureOrFundindPayments is Failure) {
+      return Left(failureOrFundindPayments);
+    }
+    var fundingPaymentsMap =
+        failureOrFundindPayments as Map<String, List<double>>;
+
     List<IncomeStatement> incomeStatements = [];
     subaccounts.forEach((subaccount) {
       incomeStatements.add(IncomeStatement(
-          accountName: subaccount,
-          totalNetUsd: totalNetUsd[subaccount],
-          depositUsd: totalUsd[subaccount]));
+        accountName: subaccount,
+        totalNetUsd: totalNetUsd[subaccount],
+        depositUsd: totalUsd[subaccount],
+        latestFundingPayment: fundingPaymentsMap[subaccount].length != 0
+            ? fundingPaymentsMap[subaccount][0]
+            : 0,
+        totalFundingPayment: fundingPaymentsMap[subaccount].length != 0
+            ? (fundingPaymentsMap[subaccount])
+                .reduce((value, element) => value + element)
+            : 0,
+      ));
     });
 
     return Right(incomeStatements);
@@ -78,10 +99,16 @@ class GetIncomeStatementUsecase
 
   Future<Either<Failure, Map<String, double>>> _getAccountInitInvestUsd(
       List<String> subaccounts) async {
-
-    return (await _getAccountInitInvestUsecase(InitInvestParams(allSubaccounts: subaccounts))).fold(
-            (failure) => Left(failure),
-            (initInvest) => Right(initInvest));
+    return (await _getAccountInitInvestUsecase(
+            InitInvestParams(allSubaccounts: subaccounts)))
+        .fold((failure) => Left(failure), (initInvest) => Right(initInvest));
   }
 
+  Future<Either<Failure, Map<String, List<double>>>> _getFundingPayment(
+      List<String> subaccounts) async {
+    return (await _getFundingPaymentUsecase(
+            FundingPaymentParams(allSubaccounts: subaccounts)))
+        .fold((failure) => Left(failure),
+            (fundingPayments) => Right(fundingPayments));
+  }
 }

@@ -17,7 +17,6 @@ class IncomeStatementPage extends StatefulWidget {
 
 class _IncomeStatementPageState extends State<IncomeStatementPage> {
   void _test(BuildContext context) async {
-
     final appDocumentDir = await getApplicationDocumentsDirectory();
     Hive.init(appDocumentDir.path);
 
@@ -28,9 +27,6 @@ class _IncomeStatementPageState extends State<IncomeStatementPage> {
 
   @override
   Widget build(BuildContext context) {
-
-
-
     return BlocProvider(
       create: (_) => IncomeStatementBloc(),
       child: Builder(builder: (BuildContext context) {
@@ -87,13 +83,14 @@ class _IncomeStatementPageState extends State<IncomeStatementPage> {
     cells.add(DataCell(Text(incomeStatement.accountName)));
     cells.add(DataCell(Text(incomeStatement.totalNetUsd.toStringAsFixed(3))));
     cells.add(DataCell(Text(incomeStatement.depositUsd.toStringAsFixed(3))));
+    cells.add(DataCell(
+        Text(incomeStatement.latestFundingPayment.toStringAsFixed(3))));
+    cells.add(
+        DataCell(Text(incomeStatement.totalFundingPayment.toStringAsFixed(3))));
     return cells;
   }
 
-
-
   Widget createDataTable(List<IncomeStatement> incomeStatements) {
-
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       child: SingleChildScrollView(

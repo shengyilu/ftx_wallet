@@ -56,5 +56,5 @@ class FtxWithdrawalHistoryLocalAdapter
 
   @override
   // TODO: implement typeId
-  int typeId = 1;
+  int get typeId => 1;
 }

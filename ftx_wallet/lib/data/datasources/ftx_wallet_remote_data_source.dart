@@ -5,6 +5,7 @@ import 'package:ftx_wallet/data/api/subaccounts/ftx_subaccounts_api_service.dart
 import 'package:ftx_wallet/data/api/wallet/ftx_wallet_api_service.dart';
 import 'package:ftx_wallet/data/model/ftx_coin.dart';
 import 'package:ftx_wallet/data/model/ftx_deposit_history.dart';
+import 'package:ftx_wallet/data/model/ftx_funding_payment.dart';
 import 'package:ftx_wallet/data/model/ftx_subaccount.dart';
 import 'package:ftx_wallet/data/model/ftx_withdrawal_history.dart';
 import 'package:ftx_wallet/data/model/serializers.dart';
@@ -17,6 +18,8 @@ abstract class FtxWalletRemoteDataSource {
   Future<Map<String, List<FtxWithdrawalHistory>>> getWithdrawalHistory(
       String subaccount);
   Future<List<String>> getAllSubaccounts();
+  Future<Map<String, List<FtxFundingPayment>>> getFundingPayment(
+      String subaccount);
 }
 
 class FtxWalletRemoteDataSourceImpl implements FtxWalletRemoteDataSource {
@@ -102,5 +105,14 @@ class FtxWalletRemoteDataSourceImpl implements FtxWalletRemoteDataSource {
         await _ftxWalletApiService.getWithdrawals(subaccount);
     List<FtxWithdrawalHistory> ftxWithdrawals = response.body.toList();
     return {subaccount: ftxWithdrawals};
+  }
+
+  @override
+  Future<Map<String, List<FtxFundingPayment>>> getFundingPayment(
+      String subaccount) async {
+    Response<BuiltList<FtxFundingPayment>> response =
+        await _ftxWalletApiService.getFundingPayment(subaccount);
+    List<FtxFundingPayment> ftxFundingPayment = response.body.toList();
+    return {subaccount: ftxFundingPayment};
   }
 }
